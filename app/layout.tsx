@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Root } from "@/components/Root/Root";
 import BottomMenu from "@/components/bottom-menu";
+import Navbar from "@/components/navbar";
 
 const poppins = Poppins({
   weight: "400",
@@ -32,6 +33,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Root>
+            <Navbar />
             {children}
             <BottomMenu />
           </Root>
