@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Pixelify_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Root } from "@/components/Root/Root";
 import BottomMenu from "@/components/bottom-menu";
 import Navbar from "@/components/navbar";
+import { LayoutProvider } from "@/context/layout-context";
 
-const poppins = Poppins({
+const pixelify_sans = Pixelify_Sans({
   weight: "400",
-  variable: "--font-poppins",
+  variable: "--font-pixelify-sans",
   subsets: ["latin"],
 });
 
@@ -25,19 +26,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
-      <body className={cn(poppins.className)}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <Root>
-            <Navbar />
-            {children}
-            <BottomMenu />
-          </Root>
-        </ThemeProvider>
+      <body className={cn(pixelify_sans.className)}>
+        <LayoutProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem={false}
+            disableTransitionOnChange
+          >
+            <Root>
+              <Navbar />
+              {children}
+              <BottomMenu />
+            </Root>
+          </ThemeProvider>
+        </LayoutProvider>
       </body>
     </html>
   );
