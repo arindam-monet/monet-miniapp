@@ -1,15 +1,18 @@
 "use client";
 
 import { useLayout } from "@/context/layout-context";
+import { useMiniApp } from "@telegram-apps/sdk-react";
 import { Spinner } from "@telegram-apps/telegram-ui";
 import Image from "next/image";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const Welcome = () => {
   const router = useRouter();
   const { dispatch } = useLayout();
+  const miniApp = useMiniApp();
   useEffect(() => {
+    miniApp.ready();
     dispatch({ type: "HIDE_BOTTOM_BAR" });
   }, []);
 
