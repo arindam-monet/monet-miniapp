@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useHapticFeedback } from "@telegram-apps/sdk-react";
 import { useState } from "react";
 
 interface TappedPoint {
@@ -27,12 +28,14 @@ const Tapper: React.FC<TapperProps> = ({
   const [points, setPoints] = useState(0);
   const [tappedPoints, setTappedPoints] = useState<TappedPoint[]>([]);
   const [isTapped, setIsTapped] = useState(false);
+  const hapticFeedback = useHapticFeedback();
 
   const handleTransitionEnd = () => {
     setIsTapped(false);
   };
 
   const handleTap = (event: React.MouseEvent<HTMLDivElement>) => {
+    hapticFeedback.impactOccurred('soft');
     setPoints(points + 1);
     onTap(points);
     setTappedPoints([
