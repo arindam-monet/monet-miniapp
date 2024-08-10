@@ -1,13 +1,13 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
 
 const config = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -69,19 +69,30 @@ const config = {
           to: { height: "0" },
         },
         "rise-and-fade": {
-          from: { opacity: '1', transform: "translateY(0)" },
-          "50%": { opacity: '0.5', transform: "translateY(-4rem)" },
-          to: { opacity: '0', transform: "translateY(-8rem)" },
+          from: { opacity: "1", transform: "translateY(0)" },
+          "50%": { opacity: "0.5", transform: "translateY(-4rem)" },
+          to: { opacity: "0", transform: "translateY(-8rem)" },
+        },
+        moveClouds: {
+          "0%": { transform: "translateX(100%)" },
+          "100%": { transform: "translateX(-100%)" },
+        },
+        "pixel-loading": {
+          "0%": { width: "0%" },
+          "50%": { width: "100%" },
+          "100%": { width: "0%" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "rise-and-fade": "rise-and-fade 1s ease-out",
+        clouds: "moveClouds 30s linear infinite",
+        "pixel-loading": "pixel-loading 10s infinite",
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config
+} satisfies Config;
 
-export default config
+export default config;

@@ -18,19 +18,19 @@ const BottomMenu: React.FC = () => {
   const menuItems: BottomMenuItem[] = [
     {
       icon: <Gamepad2 size={24} />,
-      label: "Perform tasks",
+      label: "Tasks",
       id: "tasks",
       link: "/tasks",
     },
     {
       icon: <Zap size={24} />,
-      label: "Daily check",
+      label: "Daily Check",
       id: "daily",
       link: "/daily-check",
     },
     {
       icon: <Users size={24} />,
-      label: "Refer & earn",
+      label: "Refer friends",
       id: "refer",
       link: "/refer",
     },
@@ -48,7 +48,7 @@ const BottomMenu: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 p-2 rounded-t-xl shadow-lg">
+    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 p-2 rounded-t-3xl shadow-lg">
       <div className="flex justify-around items-center">
         {menuItems.map((item) => (
           <Link href={item.link} key={item.id}>
@@ -57,14 +57,14 @@ const BottomMenu: React.FC = () => {
               className={`flex flex-col items-center p-2 transition-all duration-300 ease-in-out
                         ${
                           activeItem === item.id
-                            ? "bg-opacity-0 rounded-xl transform scale-110 hover:bg-transparent"
-                            : "hover:rounded-xl hover:scale-110"
+                            ? "bg-opacity-0 transform hover:bg-transparent"
+                            : "hover:bg-transparent"
                         }`}
               onClick={() => handleItemClick(item.id)}
             >
               <div
                 className={`transition-colors duration-300 ${
-                  activeItem === item.id ? "text-blue-400" : "text-gray-400"
+                  activeItem === item.id ? "text-blue-400" : "text-gray-500"
                 }`}
               >
                 {item.icon}
@@ -73,8 +73,8 @@ const BottomMenu: React.FC = () => {
                 className={`text-xs mt-1 transition-all duration-300 
                               ${
                                 activeItem === item.id
-                                  ? "text-blue-400 font-bold"
-                                  : "text-gray-400"
+                                  ? "text-blue-400"
+                                  : "text-gray-500"
                               }`}
               >
                 {item.label}
