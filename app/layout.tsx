@@ -5,7 +5,6 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Root } from "@/components/Root/Root";
-import Navbar from "@/components/navbar";
 import { LayoutProvider, useLayout } from "@/context/layout-context";
 
 
@@ -40,7 +39,6 @@ const LayoutContent: React.FC<{ children: React.ReactNode }> = ({
       disableTransitionOnChange
     >
       <Root>
-        <Navbar />
         {children}
         {/* {state.showBottomBar && <BottomMenu />} */}
       </Root>

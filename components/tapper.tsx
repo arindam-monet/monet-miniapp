@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { useHapticFeedback } from "@telegram-apps/sdk-react";
 import { useState } from "react";
+import useSound from "use-sound";
 
 interface TappedPoint {
   point: number;
@@ -34,7 +35,16 @@ const Tapper: React.FC<TapperProps> = ({
     setIsTapped(false);
   };
 
+  const [playSkiesOfValor] = useSound(
+    '/audio/skies_of_valor.mp3',
+    { volume: 0.25 }
+  );
+
+
   const handleTap = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (points === 0) {
+      playSkiesOfValor();
+    }
     hapticFeedback.impactOccurred('soft');
     setPoints(points + 1);
     onTap(points);

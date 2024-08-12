@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+
 const Welcome = () => {
   const router = useRouter();
   const { dispatch } = useLayout();
