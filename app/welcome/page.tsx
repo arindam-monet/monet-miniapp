@@ -21,7 +21,7 @@ const Welcome = () => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      router.push("/tasks");
+      router.push("/game/tasks");
       dispatch({ type: "SHOW_BOTTOM_BAR" });
     }, 3000);
     return () => {

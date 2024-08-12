@@ -20,25 +20,25 @@ const BottomMenu: React.FC = () => {
       icon: <Gamepad2 size={24} />,
       label: "Tasks",
       id: "tasks",
-      link: "/tasks",
+      link: "/game/tasks",
     },
     {
       icon: <Zap size={24} />,
       label: "Daily Check",
       id: "daily",
-      link: "/daily-check",
+      link: "/game/daily-check",
     },
     {
       icon: <Users size={24} />,
       label: "Refer friends",
       id: "refer",
-      link: "/refer",
+      link: "/game/refer",
     },
     {
       icon: <Wallet size={24} />,
       label: "Wallet",
       id: "wallet",
-      link: "/wallet-connect",
+      link: "/game/wallet-connect",
     },
   ];
 
