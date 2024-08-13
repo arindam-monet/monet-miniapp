@@ -17,6 +17,8 @@ interface TapperProps {
   tapAreaClassName?: string;
   animationDuration?: number;
   className?: string;
+  allowMultipleTaps?: boolean;
+  maxSimultaneousTaps?: number;
 }
 
 const Tapper: React.FC<TapperProps> = ({
@@ -25,6 +27,8 @@ const Tapper: React.FC<TapperProps> = ({
   tapAreaClassName,
   animationDuration = 1000,
   className,
+  allowMultipleTaps,
+  maxSimultaneousTaps = 1, // Default to 1 simultaneous taps
 }) => {
   const [gameState, setGameState] = useState({
     points: 0,
@@ -35,70 +39,83 @@ const Tapper: React.FC<TapperProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tapAreaRef = useRef<HTMLDivElement>(null);
   const hapticFeedback = useHapticFeedback();
-  const [playSkiesOfValor] = useSound('/audio/skies_of_valor.mp3', { volume: 0.25 });
+  const [playSkiesOfValor] = useSound("/audio/skies_of_valor.mp3", {
+    volume: 0.25,
+  });
 
-  const handleTap = useCallback((event: React.TouchEvent<HTMLDivElement>) => {
-    event.preventDefault();
+  const handleTap = useCallback(
+    (event: React.TouchEvent<HTMLDivElement>) => {
+      event.preventDefault();
 
-    if (gameState.points === 0) {
-      // playSkiesOfValor();
-    }
+      if (gameState.points === 0) {
+        playSkiesOfValor();
+      }
 
-    hapticFeedback.impactOccurred('soft');
+      hapticFeedback.impactOccurred("soft");
 
-    const touch = event.touches[0];
-    const rect = tapAreaRef.current?.getBoundingClientRect();
-    
-    if (rect) {
-      setGameState(prevState => ({
-        points: prevState.points + 1,
-        tappedPoints: [
-          ...prevState.tappedPoints,
-          { 
-            x: touch.clientX - rect.left, 
+      const rect = tapAreaRef.current?.getBoundingClientRect();
+
+      if (rect) {
+        const maxTapsAllowed = allowMultipleTaps ? maxSimultaneousTaps : 1;
+        const newTappedPoints = Array.from(event.touches)
+          .slice(0, maxTapsAllowed)
+          .map((touch) => ({
+            x: touch.clientX - rect.left,
             y: touch.clientY - rect.top,
-            createdAt: Date.now()
-          }
-        ],
-        isTapped: true,
-      }));
-    }
+            createdAt: Date.now(),
+          }));
 
-    onTap(gameState.points);
-  }, [gameState.points, hapticFeedback, onTap, playSkiesOfValor]);
+        setGameState((prevState) => ({
+          points: prevState.points + newTappedPoints.length,
+          tappedPoints: [...prevState.tappedPoints, ...newTappedPoints],
+          isTapped: true,
+        }));
 
-  const handleTransitionEnd = useCallback(() => {
-    setGameState(prevState => ({ ...prevState, isTapped: false }));
+        onTap(gameState.points + newTappedPoints.length);
+      }
+    },
+    [
+      gameState.points,
+      hapticFeedback,
+      onTap,
+      playSkiesOfValor,
+      maxSimultaneousTaps,
+      allowMultipleTaps,
+    ]
+  );
+
+  const handleTouchEnd = useCallback(() => {
+    setGameState((prevState) => ({ ...prevState, isTapped: false }));
   }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     let animationFrameId: number;
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       const currentTime = Date.now();
-      const updatedPoints = gameState.tappedPoints.filter(point => 
-        currentTime - point.createdAt < animationDuration
+      const updatedPoints = gameState.tappedPoints.filter(
+        (point) => currentTime - point.createdAt < animationDuration
       );
 
-      updatedPoints.forEach(point => {
+      updatedPoints.forEach((point) => {
         const progress = (currentTime - point.createdAt) / animationDuration;
         const y = point.y - 50 * progress; // Move up by 50 pixels over the animation
         const alpha = 1 - progress; // Fade out over time
 
         ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-        ctx.font = '20px Arial';
-        ctx.fillText('+1', point.x, y);
+        ctx.font = "20px Arial";
+        ctx.fillText("+1", point.x, y);
       });
 
-      setGameState(prevState => ({
+      setGameState((prevState) => ({
         ...prevState,
         tappedPoints: updatedPoints,
       }));
@@ -121,12 +138,12 @@ const Tapper: React.FC<TapperProps> = ({
           gameState.isTapped ? "scale-90 shadow-md transition duration-100" : ""
         )}
         onTouchStart={handleTap}
-        onTransitionEnd={handleTransitionEnd}
+        onTouchEnd={handleTouchEnd}
       >
         {icon}
       </div>
-      <canvas 
-        ref={canvasRef} 
+      <canvas
+        ref={canvasRef}
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
         width={128} // Match these to the actual size of your component
         height={128}
