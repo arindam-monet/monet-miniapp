@@ -22,7 +22,7 @@ const Welcome = () => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      router.push("/game/tasks");
+      router.push("/onboarding/first");
       dispatch({ type: "SHOW_BOTTOM_BAR" });
     }, 3000);
     return () => {
