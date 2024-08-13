@@ -1,14 +1,14 @@
 "use client";
 
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useHapticFeedback } from "@telegram-apps/sdk-react";
-import { useState } from "react";
 import useSound from "use-sound";
 
 interface TappedPoint {
-  point: number;
   x: number;
   y: number;
+  createdAt: number;
 }
 
 interface TapperProps {
@@ -26,64 +26,113 @@ const Tapper: React.FC<TapperProps> = ({
   animationDuration = 1000,
   className,
 }) => {
-  const [points, setPoints] = useState(0);
-  const [tappedPoints, setTappedPoints] = useState<TappedPoint[]>([]);
-  const [isTapped, setIsTapped] = useState(false);
+  const [gameState, setGameState] = useState({
+    points: 0,
+    tappedPoints: [] as TappedPoint[],
+    isTapped: false,
+  });
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const tapAreaRef = useRef<HTMLDivElement>(null);
   const hapticFeedback = useHapticFeedback();
+  const [playSkiesOfValor] = useSound('/audio/skies_of_valor.mp3', { volume: 0.25 });
 
-  const handleTransitionEnd = () => {
-    setIsTapped(false);
-  };
+  const handleTap = useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    event.preventDefault();
 
-  const [playSkiesOfValor] = useSound(
-    '/audio/skies_of_valor.mp3',
-    { volume: 0.25 }
-  );
-
-
-  const handleTap = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (points === 0) {
+    if (gameState.points === 0) {
       // playSkiesOfValor();
     }
+
     hapticFeedback.impactOccurred('soft');
-    setPoints(points + 1);
-    onTap(points);
-    setTappedPoints([
-      ...tappedPoints,
-      { point: 1, x: event.clientX, y: event.clientY },
-    ]);
-    setIsTapped(true);
-  };
+
+    const touch = event.touches[0];
+    const rect = tapAreaRef.current?.getBoundingClientRect();
+    
+    if (rect) {
+      setGameState(prevState => ({
+        points: prevState.points + 1,
+        tappedPoints: [
+          ...prevState.tappedPoints,
+          { 
+            x: touch.clientX - rect.left, 
+            y: touch.clientY - rect.top,
+            createdAt: Date.now()
+          }
+        ],
+        isTapped: true,
+      }));
+    }
+
+    onTap(gameState.points);
+  }, [gameState.points, hapticFeedback, onTap, playSkiesOfValor]);
+
+  const handleTransitionEnd = useCallback(() => {
+    setGameState(prevState => ({ ...prevState, isTapped: false }));
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationFrameId: number;
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      const currentTime = Date.now();
+      const updatedPoints = gameState.tappedPoints.filter(point => 
+        currentTime - point.createdAt < animationDuration
+      );
+
+      updatedPoints.forEach(point => {
+        const progress = (currentTime - point.createdAt) / animationDuration;
+        const y = point.y - 50 * progress; // Move up by 50 pixels over the animation
+        const alpha = 1 - progress; // Fade out over time
+
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.font = '20px Arial';
+        ctx.fillText('+1', point.x, y);
+      });
+
+      setGameState(prevState => ({
+        ...prevState,
+        tappedPoints: updatedPoints,
+      }));
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [gameState.tappedPoints, animationDuration]);
 
   return (
-    <div className={cn("w-32 h-32", className)}>
+    <div className={cn("w-32 h-32 relative", className)}>
       <div
+        ref={tapAreaRef}
         className={cn(
           "bg-primary rounded-full p-10 h-full flex justify-center items-center cursor-pointer",
           tapAreaClassName,
-          isTapped ? "scale-90 shadow-md transition duration-100" : ""
+          gameState.isTapped ? "scale-90 shadow-md transition duration-100" : ""
         )}
-        onClick={handleTap}
+        onTouchStart={handleTap}
         onTransitionEnd={handleTransitionEnd}
       >
         {icon}
       </div>
-      {tappedPoints.map((tappedPoint, index) => (
-        <div
-          key={index}
-          className="absolute text-2xl font-bold animate-rise-and-fade"
-          style={{
-            top: `${tappedPoint.y}px`,
-            left: `${tappedPoint.x}px`,
-            animationDuration: `${animationDuration}ms`,
-            animationFillMode: "forwards",
-          }}
-        >
-          +{tappedPoint.point}
-        </div>
-      ))}
+      <canvas 
+        ref={canvasRef} 
+        className="absolute top-0 left-0 w-full h-full pointer-events-none"
+        width={128} // Match these to the actual size of your component
+        height={128}
+      />
     </div>
   );
 };
 
-export default Tapper;
+export default React.memo(Tapper);
