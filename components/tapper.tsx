@@ -43,7 +43,7 @@ const Tapper: React.FC<TapperProps> = ({
 
   const handleTap = (event: React.MouseEvent<HTMLDivElement>) => {
     if (points === 0) {
-      playSkiesOfValor();
+      // playSkiesOfValor();
     }
     hapticFeedback.impactOccurred('soft');
     setPoints(points + 1);
