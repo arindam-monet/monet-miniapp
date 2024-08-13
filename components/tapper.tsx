@@ -48,7 +48,7 @@ const Tapper: React.FC<TapperProps> = ({
       event.preventDefault();
 
       if (gameState.points === 0) {
-        playSkiesOfValor();
+        // playSkiesOfValor();
       }
 
       hapticFeedback.impactOccurred("soft");

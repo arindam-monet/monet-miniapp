@@ -32,6 +32,7 @@ const DailyCheck = () => {
         className="mx-auto mt-16 w-64 h-64 border-8 border-primary-foreground rounded-full"
         onTap={(points) => setPoints(points)}
         allowMultipleTaps
+        maxSimultaneousTaps={allowMultipleTaps ? 2 : 1}
       />
       <p className="mt-4">You have {points} points</p>
     </div>
