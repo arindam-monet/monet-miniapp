@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 const SecondPage = () => {
   const router = useRouter();
   const handleNext = () => {
-    router.push("/game/tasks");
+    router.push("/onboarding/select-role");
   };
 
   return (
